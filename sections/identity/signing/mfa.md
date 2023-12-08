@@ -4,8 +4,6 @@ description: Describes Multi Factor Authentication with Veracity Identity
 ---
 
 # Multi-Factor Authentication (MFA)
-*Note!* Currently only phone-based MFA (SMS or call) is supported.
-
 
 ## Types of Multi-Factor Authentication offered by Veracity
 
@@ -27,7 +25,7 @@ https://login.veracity.com/dnvglb2cprod.onmicrosoft.com/oauth2/v2.0/authorize?p=
 
 ### User-initiated MFA
 A user can choose to always use MFA for any service they use in Veracity. This can be done on the **Security** page in the user’s profile as follows:
-
+**Re-write**
 If the user has not already defined a phone number in his profile, he will need to click on the link shown below to do so:
 
 
@@ -54,6 +52,16 @@ When MFA is invoked, it will by default only be invoked once during the lifetime
 A service can decide to force MFA even if it has already been done earlier in the session by sending the parameters *&mfa_required=true&prompt=login* in the login request. User will then be asked both to log in and do MFA.
 
 ## Verifying that MFA has been done
-In order to verify that MFA has been completed in the session, you can look for the claim *mfaType* which should have the value *phone*. If no MFA has been done, it has the value *none*.
+In order to verify that MFA has been completed in the session and also what type of MFA has been done, you can look for the following claims:
+
+*mfa* - has the value *true* or *false* indicting whether user authenticated with MFA or not
+
+*mfaMethod* - can have the following values:
+  - *none* - no MFA authentication was done
+  - *totp* - user used TOTP as MFA method
+  - *phone* - user used SMS or call as MFA method
+  - *federatedIdp* - MFA was done in user's home company - see below
+
+We still support the legacy claim *mfaType* which should have the value *phone* no matter what MFA method was used. If no MFA has been done, it has the value *none*. This claim is planned to be deprecated in the future, so you should change to use the above claims instead.
 
 If it is a federated user, meaning the user logs in to Veracity with an account in their own company, and MFA is invoked on the federated company side, MFA will not be prompted again on Veracity side. The claim *mfaType* will then have the value *federatedIdp*.
